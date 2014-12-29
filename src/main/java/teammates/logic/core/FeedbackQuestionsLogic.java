@@ -407,6 +407,7 @@ public class FeedbackQuestionsLogic {
         
         switch (recipientType) {
         case SELF:
+            // if giver are TEAMS, the recipient should be the team itself 
             if (question.giverType == FeedbackParticipantType.TEAMS) {
                 recipients.put(giverTeam, giverTeam);
             } else {
