@@ -41,7 +41,7 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         
         int numOfMcqChoices = 0;
         List<String> mcqChoices = new LinkedList<String>();
-        boolean mcqOtherEnabled = false; // TODO change this when implementing "other, please specify" field
+        boolean mcqOtherEnabled = true; // TODO change this when implementing "other, please specify" field
         
         String generatedMcqOptions = HttpRequestHelper.getValueFromParamMap(requestParameters, Const.ParamsNames.FEEDBACK_QUESTION_GENERATEDOPTIONS);
         if (generatedMcqOptions.equals(FeedbackParticipantType.NONE.toString())) {
@@ -71,6 +71,7 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         this.mcqChoices = mcqChoices;
         this.otherEnabled = otherEnabled;
         this.generateOptionsFor = FeedbackParticipantType.NONE;
+        System.out.println(otherEnabled);
     }
     
     private void setMcqQuestionDetails(FeedbackParticipantType generateOptionsFor) {
@@ -103,6 +104,10 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
             return true;
         }
         
+        if(this.otherEnabled != newMcqDetails.otherEnabled) {
+           return true;
+        }
+
         return false;
     }
 
@@ -114,6 +119,8 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         
         StringBuilder optionListHtml = new StringBuilder();
         String optionFragmentTemplate = FeedbackQuestionFormTemplates.MCQ_SUBMISSION_FORM_OPTIONFRAGMENT;
+        Boolean isOtherSelected = existingMcqResponse.isOtherOptionAnswer();
+        
         for(int i = 0; i < choices.size(); i++) {
             String optionFragment = 
                     FeedbackQuestionFormTemplates.populateTemplate(optionFragmentTemplate,
@@ -125,6 +132,20 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
                             "${mcqChoiceValue}", Sanitizer.sanitizeForHtml(choices.get(i)));
             optionListHtml.append(optionFragment + Const.EOL);
         }
+
+        if(otherEnabled) {
+            String otherOptionFragmentTemplate = FeedbackQuestionFormTemplates.MCQ_SUBMISSION_FORM_OTHEROPTIONFRAGMENT;
+            String otherOptionFragment = FeedbackQuestionFormTemplates.populateTemplate(otherOptionFragmentTemplate,
+                    "${qnIdx}", Integer.toString(qnIdx),
+                    "${responseIdx}", Integer.toString(responseIdx),
+                    "${disabled}", sessionIsOpen ? "" : "disabled=\"disabled\"",
+                    "${text-disabled}", (sessionIsOpen && isOtherSelected) ? "" : "disabled=\"disabled\"",
+                    "${checked}", isOtherSelected ? "checked=\"checked\"" : "",
+                    "${Const.ParamsNames.FEEDBACK_RESPONSE_TEXT}", Const.ParamsNames.FEEDBACK_RESPONSE_TEXT,
+                    "${mcqChoiceValue}", isOtherSelected ? existingMcqResponse.getAnswerHtml(null) : "",
+                    "${otherOptionFlagValue}", isOtherSelected ? "1" : "0");
+            optionListHtml.append(otherOptionFragment + Const.EOL);
+        } 
         
         String html = FeedbackQuestionFormTemplates.populateTemplate(
                 FeedbackQuestionFormTemplates.MCQ_SUBMISSION_FORM,
@@ -151,6 +172,20 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
                             "${mcqChoiceValue}",  Sanitizer.sanitizeForHtml(choices.get(i)));
             optionListHtml.append(optionFragment + Const.EOL);
         }
+
+        if(otherEnabled) {
+            String otherOptionFragmentTemplate = FeedbackQuestionFormTemplates.MCQ_SUBMISSION_FORM_OTHEROPTIONFRAGMENT;
+            String otherOptionFragment = FeedbackQuestionFormTemplates.populateTemplate(otherOptionFragmentTemplate,
+                    "${qnIdx}", Integer.toString(qnIdx),
+                    "${responseIdx}", Integer.toString(responseIdx),
+                    "${disabled}", sessionIsOpen ? "" : "disabled=\"disabled\"",
+                    "${text-disabled}", "disabled=\"disabled\"",
+                    "${checked}", "",
+                    "${Const.ParamsNames.FEEDBACK_RESPONSE_TEXT}", Const.ParamsNames.FEEDBACK_RESPONSE_TEXT,
+                    "${mcqChoiceValue}", "",
+                    "${otherOptionFlagValue}", "0");
+            optionListHtml.append(otherOptionFragment + Const.EOL);
+        } 
         
         String html = FeedbackQuestionFormTemplates.populateTemplate(
                 FeedbackQuestionFormTemplates.MCQ_SUBMISSION_FORM,
@@ -230,6 +265,8 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
                 "${questionNumber}", Integer.toString(questionNumber),
                 "${Const.ParamsNames.FEEDBACK_QUESTION_NUMBEROFCHOICECREATED}", Const.ParamsNames.FEEDBACK_QUESTION_NUMBEROFCHOICECREATED,
                 "${numOfMcqChoices}", Integer.toString(numOfMcqChoices),
+                "${checkedOtherOption}", ((otherEnabled)?"checked=\"checked\"":""),
+                "${Const.ParamsNames.FEEDBACK_QUESTION_MCQOTHEROPTION}", Const.ParamsNames.FEEDBACK_QUESTION_MCQOTHEROPTION,
                 "${checkedGeneratedOptions}", (generateOptionsFor == FeedbackParticipantType.NONE) ? "" : "checked=\"checked\"", 
                 "${Const.ParamsNames.FEEDBACK_QUESTION_GENERATEDOPTIONS}", Const.ParamsNames.FEEDBACK_QUESTION_GENERATEDOPTIONS,
                 "${generateOptionsForValue}", generateOptionsFor.toString(),
@@ -280,6 +317,13 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
             optionListHtml.append("</ul>");
         }
         
+        if(otherEnabled) {
+            optionListHtml.append("<ul style=\"list-style-type: disc;margin-left: 20px;\" >");
+            String optionFragment = 
+                    FeedbackQuestionFormTemplates.populateTemplate(optionFragmentTemplate,"${mcqChoiceValue}", "&lt;Other Option&gt;");
+            optionListHtml.append(optionFragment);
+            optionListHtml.append("</ul>");
+        }
         
         String additionalInfo = FeedbackQuestionFormTemplates.populateTemplate(
                 FeedbackQuestionFormTemplates.MCQ_ADDITIONAL_INFO,

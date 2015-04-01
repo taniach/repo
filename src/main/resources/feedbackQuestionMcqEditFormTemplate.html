@@ -10,6 +10,14 @@
                         <span class="glyphicon glyphicon-plus">
                         </span> add more options
                     </a>
+                    <div class="control-label">
+                    <label>
+
+            <input type="checkbox" disabled="disabled" id="mcqOtherOption-${questionNumber}" ${checkedOtherOption} onchange="toggleOtherOption(this, ${questionNumber})">
+            Add 'Other' option (Allows respondents to type in their own answer)
+
+        </label>
+    </div>
                 </div>
             </div>
         </div>
@@ -17,6 +25,8 @@
         <input type="hidden" name="${Const.ParamsNames.FEEDBACK_QUESTION_NUMBEROFCHOICECREATED}"
             id="${Const.ParamsNames.FEEDBACK_QUESTION_NUMBEROFCHOICECREATED}-${questionNumber}" 
             value="${numOfMcqChoices}">
+
+        
     </div>
     <div class="col-sm-6">
         <label class="control-label col-sm-8"><input type="checkbox" 
@@ -38,5 +48,7 @@
             name="${Const.ParamsNames.FEEDBACK_QUESTION_GENERATEDOPTIONS}" 
             value="${generateOptionsForValue}"> 
     </div>
+
+    
     <br>
 </div>
