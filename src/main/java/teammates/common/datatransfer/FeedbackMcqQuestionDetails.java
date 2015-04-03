@@ -71,7 +71,6 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         this.mcqChoices = mcqChoices;
         this.otherEnabled = otherEnabled;
         this.generateOptionsFor = FeedbackParticipantType.NONE;
-        System.out.println(otherEnabled);
     }
     
     private void setMcqQuestionDetails(FeedbackParticipantType generateOptionsFor) {

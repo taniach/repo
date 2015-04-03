@@ -838,7 +838,7 @@ function toggleMcqGeneratedOptions(checkbox, questionNumber) {
     }
 }
 
-function toggleOtherOption(checkbox,questionNumber) {
+function toggleOtherOption(checkbox, questionNumber) {
     idOfQuestion = '#form_editquestion-' + questionNumber;
     idSuffix = (questionNumber > 0) ? ("-" + questionNumber) : "";
     
