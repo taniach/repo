@@ -41,7 +41,7 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         
         int numOfMcqChoices = 0;
         List<String> mcqChoices = new LinkedList<String>();
-        boolean mcqOtherEnabled = true; // TODO change this when implementing "other, please specify" field
+        boolean mcqOtherEnabled = HttpRequestHelper.getValueFromParamMap(requestParameters, Const.ParamsNames.FEEDBACK_QUESTION_MCQOTHEROPTIONFLAG) != null; 
         
         String generatedMcqOptions = HttpRequestHelper.getValueFromParamMap(requestParameters, Const.ParamsNames.FEEDBACK_QUESTION_GENERATEDOPTIONS);
         if (generatedMcqOptions.equals(FeedbackParticipantType.NONE.toString())) {
@@ -133,6 +133,7 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         }
 
         if(otherEnabled) {
+            
             String otherOptionFragmentTemplate = FeedbackQuestionFormTemplates.MCQ_SUBMISSION_FORM_OTHEROPTIONFRAGMENT;
             String otherOptionFragment = FeedbackQuestionFormTemplates.populateTemplate(otherOptionFragmentTemplate,
                     "${qnIdx}", Integer.toString(qnIdx),
@@ -141,7 +142,8 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
                     "${text-disabled}", (sessionIsOpen && isOtherSelected) ? "" : "disabled=\"disabled\"",
                     "${checked}", isOtherSelected ? "checked=\"checked\"" : "",
                     "${Const.ParamsNames.FEEDBACK_RESPONSE_TEXT}", Const.ParamsNames.FEEDBACK_RESPONSE_TEXT,
-                    "${mcqChoiceValue}", isOtherSelected ? existingMcqResponse.getAnswerHtml(null) : "",
+                    "${mcqChoiceValue}", isOtherSelected ? existingMcqResponse.getAnswerString() : "",
+                    //"${mcqChoiceValue}", "Other",
                     "${otherOptionFlagValue}", isOtherSelected ? "1" : "0");
             optionListHtml.append(otherOptionFragment + Const.EOL);
         } 
@@ -182,6 +184,7 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
                     "${checked}", "",
                     "${Const.ParamsNames.FEEDBACK_RESPONSE_TEXT}", Const.ParamsNames.FEEDBACK_RESPONSE_TEXT,
                     "${mcqChoiceValue}", "",
+                    //"${mcqChoiceValue}", "Other",
                     "${otherOptionFlagValue}", "0");
             optionListHtml.append(otherOptionFragment + Const.EOL);
         } 
@@ -320,7 +323,7 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         if(otherEnabled) {
             optionListHtml.append("<ul style=\"list-style-type: disc;margin-left: 20px;\" >");
             String optionFragment = 
-                    FeedbackQuestionFormTemplates.populateTemplate(optionFragmentTemplate,"${mcqChoiceValue}", "&lt;Other Option&gt;");
+                    FeedbackQuestionFormTemplates.populateTemplate(optionFragmentTemplate,"${mcqChoiceValue}", "Other");
             optionListHtml.append(optionFragment);
             optionListHtml.append("</ul>");
         }
