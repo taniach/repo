@@ -133,7 +133,6 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         }
 
         if(otherEnabled) {
-            
             String otherOptionFragmentTemplate = FeedbackQuestionFormTemplates.MCQ_SUBMISSION_FORM_OTHEROPTIONFRAGMENT;
             String otherOptionFragment = FeedbackQuestionFormTemplates.populateTemplate(otherOptionFragmentTemplate,
                     "${qnIdx}", Integer.toString(qnIdx),
@@ -143,7 +142,6 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
                     "${checked}", isOtherSelected ? "checked=\"checked\"" : "",
                     "${Const.ParamsNames.FEEDBACK_RESPONSE_TEXT}", Const.ParamsNames.FEEDBACK_RESPONSE_TEXT,
                     "${mcqChoiceValue}", isOtherSelected ? existingMcqResponse.getAnswerString() : "",
-                    //"${mcqChoiceValue}", "Other",
                     "${otherOptionFlagValue}", isOtherSelected ? "1" : "0");
             optionListHtml.append(otherOptionFragment + Const.EOL);
         } 
@@ -184,7 +182,6 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
                     "${checked}", "",
                     "${Const.ParamsNames.FEEDBACK_RESPONSE_TEXT}", Const.ParamsNames.FEEDBACK_RESPONSE_TEXT,
                     "${mcqChoiceValue}", "",
-                    //"${mcqChoiceValue}", "Other",
                     "${otherOptionFlagValue}", "0");
             optionListHtml.append(otherOptionFragment + Const.EOL);
         } 
@@ -475,6 +472,4 @@ public class FeedbackMcqQuestionDetails extends FeedbackQuestionDetails {
         }
         return errors;
     }
-
-
 }
